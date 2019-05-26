@@ -1,0 +1,16 @@
+body,
+html {
+  height: 100%;
+}
+
+#map-id {
+  height: 800px;
+  width: 1500px;
+  position: relative;
+}
+
+#text-container {
+  position: relative;
+  top: 15px;
+  left: 30px;
+}

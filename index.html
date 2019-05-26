@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>ISS location</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+      integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+      crossorigin=""
+    ></script>
+  </head>
+  <body>
+    <div id="text-container">
+      <h1>Where is the ISS?</h1>
+
+      <h3>latitude: <span id="latitude"></span></h3>
+      <h3>longitude: <span id="longitude"></span></h3>
+    </div>
+
+    <div id="map-id"></div>
+
+    <script async defer>
+      let data;
+      let latitude;
+      let longitude;
+      const latitudeP = document.getElementById("latitude");
+      const longitudeP = document.getElementById("longitude");
+      const issAPI_url = "https://api.wheretheiss.at/v1/satellites/25544";
+      const access_token =
+        "pk.eyJ1IjoiZGFsbGFzb2xpdmVyIiwiYSI6ImNqdzRhbHowYzBqa3IzeXFzNnE2YXNzbTgifQ.mEqvnd_hdmMhw5NIDAg0eQ";
+
+      const myMap = L.map("map-id").setView([0, 0], 2.5);
+      L.tileLayer(
+        `https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=${access_token}`,
+        {
+          attribution:
+            'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          maxZoom: 18,
+          id: "mapbox.streets",
+          accessToken:
+            "pk.eyJ1IjoiZGFsbGFzb2xpdmVyIiwiYSI6ImNqb3dkMmlhejA5aGgzd210bXczdDc5MW8ifQ.xmHfqg0kJ06WQFeyBgrnzA"
+        }
+      ).addTo(myMap);
+
+      console.log(latitude);
+
+      async function getIssLocation() {
+        const response = await fetch(issAPI_url);
+        data = await response.json();
+        latitude = data.latitude;
+        longitude = data.longitude;
+
+        latitudeP.textContent = latitude;
+        longitudeP.textContent = longitude;
+        const issMarker = L.marker([latitude, longitude]).addTo(myMap);
+      }
+
+      getIssLocation();
+
+      function updateIssLocation() {
+        setInterval(() => {
+          getIssLocation();
+        }, 1000);
+      }
+
+      updateIssLocation();
+
+      // fetch(issAPI)
+      //   .then(response => {
+      //     return response.json();
+      //   })
+      //   .then(locationJson => {
+      //     console.log(locationJson.longitude);
+      //   });
+    </script>
+  </body>
+</html>
